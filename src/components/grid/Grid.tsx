@@ -1,10 +1,19 @@
 import * as React from 'react';
 import { memo } from 'react-tracked';
 import DataGrid, {
+  Row as GridRow,
   DataGridHandle,
+  RowRendererProps,
   RowsChangeData,
 } from '@supabase/react-data-grid';
-import { Typography, Loading } from '@supabase/ui';
+import {
+  ContextMenu,
+  Divider,
+  Typography,
+  Loading,
+  // IconEdit,
+  // IconTrash,
+} from '@supabase/ui';
 import { GridProps, SupaRow } from '../../types';
 import { useDispatch, useTrackedState } from '../../store';
 import { useKeyboardShortcuts } from '../common';
@@ -131,6 +140,20 @@ export const Grid: React.FC<GridProps> = memo(
       });
     }
 
+    function RowRenderer(props: RowRendererProps<SupaRow>) {
+      return (
+        <ContextMenu
+          overlay={[
+            <ContextMenu.Item>Edit row</ContextMenu.Item>,
+            <Divider light />,
+            <ContextMenu.Item>Delete row</ContextMenu.Item>,
+          ]}
+        >
+          <GridRow {...props} />
+        </ContextMenu>
+      );
+    }
+
     if (!columnHeaders || columnHeaders.length == 0) {
       return (
         <div
@@ -156,6 +179,7 @@ export const Grid: React.FC<GridProps> = memo(
           columns={gridColumns}
           rows={rows}
           rowKeyGetter={rowKeyGetter}
+          rowRenderer={RowRenderer}
           selectedRows={state.selectedRows}
           onColumnResized={onColumnResized}
           onRowsChange={onRowsChange}
